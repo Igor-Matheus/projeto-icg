@@ -16,7 +16,7 @@ O robô possui movimentos corporais e consegue se deslocar utilizando rodas em s
 ## 🎨 Desenho esquemático do robô
 Um esquema em desenho das partes que compõem o robô:  
 
-![Exemplo do robô Karen](./images/karen_robot_scheme.png)  
+![Esquema do robô Karen](./images/karen_robot_scheme.jpeg)  
 
 
 ## 🖼️ Imagens do programa
