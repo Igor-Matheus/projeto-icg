@@ -70,6 +70,4 @@ gcc main.c -o karen -lopengl32 -lglu32 -lfreeglut
 Projeto desenvolvido por:
 - [Gustavo Gomez]() - (Descrição da parte feita ...)
 - [Igor Matheus](https://github.com/Igor-Matheus) - (Descrição da parte feita ...)
-- [Jasom Rocha]() - (Descrição da parte feita ...)
-
-  
+- [Jasom Rocha](https://github.com/JasomRocha) - (Descrição da parte feita ...)
