@@ -70,7 +70,7 @@ g++ <nome_do_arquivo.c> -o karen -lopengl32 -lglu32 -lfreeglut
 Projeto desenvolvido por:
 - [Gustavo Gomez]() - (Descrição da parte feita: )
 - [Igor Matheus](https://github.com/Igor-Matheus) - (Descrição da parte feita: )
-- [Jasom Rocha](https://github.com/JasomRocha) - (Descrição da parte feita: )
+- [Jasom Rocha](https://github.com/JasomRocha) - Descrição da parte feita: Desenvolvi o corpo do robo jutamente com a primeira ideia de cenário, basicamente defini como se constrói um cilindro para visualização 3D e depois empilhei um total de 7 cilindros logo abaixo da cabeça (TV) do robo, criei alguns inputs de movimentação do robo e fiz com que ele se movimenta-se pelo cenário de maneira que, podemos observar sua movimentação olhando para os objetos que foram postos para compor o cenário, Isso é o inicio da abordagem final, e foi tudo que foi trabalhado por mim na primeira semana de desenvolvimento do projetoendo o commit das alterações hoje (27/09)
 
 
 
