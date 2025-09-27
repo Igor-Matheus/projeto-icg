@@ -1,7 +1,7 @@
 # 🤖 Projeto de Computação Gráfica - Robô Karen 
 
 Repositório do projeto desenvolvido para a disciplina **Introdução à Computação Gráfica** do curso de **Engenharia de Computação - UFPB**.  
-O projeto consiste na implementação, em linguagem **C com OpenGL**, de um robô humanoide inspirado na **Karen** (computador do Plankton, do desenho *Bob Esponja*).  
+O projeto consiste na implementação, em **linguagem C com OpenGL**, de um robô humanoide inspirado na **Karen** (computador do Plankton, do desenho *Bob Esponja*).  
 
 O robô possui movimentos corporais e consegue se deslocar utilizando rodas em seus "pés".  
 
@@ -71,4 +71,5 @@ Projeto desenvolvido por:
 - [Gustavo Gomez]() - (Descrição da parte feita: )
 - [Igor Matheus](https://github.com/Igor-Matheus) - (Descrição da parte feita: )
 - [Jasom Rocha](https://github.com/JasomRocha) - (Descrição da parte feita: )
+
 
