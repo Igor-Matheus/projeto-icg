@@ -55,7 +55,7 @@ g++ <nome_do_arquivo.c> -o karen -lopengl32 -lglu32 -lfreeglut
 
 
 ## ⚠️ Principais problemas encontrados
-- Problema 1:
+- Problema 1: Linkar os elementos do robo uma vez criados de maneiras separadas, no nosso caso, a criação da cabeça do robô foi uma das primeiras partes a ser criada e depois o corpo junto com a base, eles desevem se mover todos juntos e isso acabou sendo um problema na hora da implementação.
 - Problema 2:
 - Problema 3:
 
@@ -71,5 +71,6 @@ Projeto desenvolvido por:
 - [Gustavo Gomez]() - (Descrição da parte feita: )
 - [Igor Matheus](https://github.com/Igor-Matheus) - (Descrição da parte feita: )
 - [Jasom Rocha](https://github.com/JasomRocha) - (Descrição da parte feita: )
+
 
 
