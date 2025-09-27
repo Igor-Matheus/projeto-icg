@@ -71,10 +71,13 @@ Projeto desenvolvido por:
 - [Gustavo Gomez]() - (Descrição da parte feita: )
 - [Igor Matheus](https://github.com/Igor-Matheus) - (Descrição da parte feita: )
 - [Jasom Rocha](https://github.com/JasomRocha) - Descrição da parte feita: Desenvolvi o corpo do robo jutamente com a primeira ideia de cenário, basicamente defini como se constrói um cilindro para visualização 3D e depois empilhei um total de 7 cilindros logo abaixo da cabeça (TV) do robo, criei alguns inputs de movimentação do robo e fiz com que ele se desloque pelo cenário, de maneira que podemos observar sua movimentação olhando para os objetos que foram postos para compor a cena, isso é o inicio da abordagem final, e foi tudo que foi trabalhado por mim na primeira semana de desenvolvimento do projeto fazendo o commit das alterações hoje (27/09)
-- evidencia 1
+
+-- evidencia 1
 <img width="563" height="634" alt="image" src="https://github.com/user-attachments/assets/f69a51b6-f31c-4100-bf64-b51a70c43f9a" />
-- evidencia 2 
+
+-- evidencia 2 
 <img width="562" height="635" alt="Captura de tela 2025-09-27 132505" src="https://github.com/user-attachments/assets/14092173-8cd3-40dd-a361-6d3327f3e8e6" />
+
 
 
 
