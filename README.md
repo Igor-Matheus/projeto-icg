@@ -1,7 +1,7 @@
 # 🤖 Projeto de Computação Gráfica - Robô Karen 
 
 Repositório do projeto desenvolvido para a disciplina **Introdução à Computação Gráfica** do curso de **Engenharia de Computação - UFPB**.  
-O projeto consiste na implementação, em **C com OpenGL**, de um robô humanoide inspirado na **Karen** (computador do Plankton, do desenho *Bob Esponja*).  
+O projeto consiste na implementação, em linguagem **C com OpenGL**, de um robô humanoide inspirado na **Karen** (computador do Plankton, do desenho *Bob Esponja*).  
 
 O robô possui movimentos corporais e consegue se deslocar utilizando rodas em seus "pés".  
 
@@ -9,7 +9,7 @@ O robô possui movimentos corporais e consegue se deslocar utilizando rodas em s
 ## 📌 O que o código faz
 - Renderiza em 3D a personagem Karen como um robô humanoide.  
 - Permite movimentação de partes do corpo (braços, cabeça, tronco etc.).  
-- Possui rodas para locomoção em cena.  
+- Possui rodas para locomoção.  
 - Animações básicas de deslocamento e movimentos coordenados.  
 
 
@@ -41,11 +41,11 @@ No Windows, recomenda-se usar o MinGW ou outro compilador C com suporte a OpenGL
 ### Compilação
 No Linux:
 ```bash
-gcc main.c -o karen -lGL -lGLU -lglut
+g++ <nome_do_arquivo.c> -o karen -lGL -lGLU -lglut
 ```
 No Windows (exemplo com MinGW):
 ```bash
-gcc main.c -o karen -lopengl32 -lglu32 -lfreeglut
+g++ <nome_do_arquivo.c> -o karen -lopengl32 -lglu32 -lfreeglut
 ```
 
 ### Execução
@@ -68,6 +68,7 @@ gcc main.c -o karen -lopengl32 -lglu32 -lfreeglut
 
 ## 👨‍💻 Autoria
 Projeto desenvolvido por:
-- [Gustavo Gomez]() - (Descrição da parte feita ...)
-- [Igor Matheus](https://github.com/Igor-Matheus) - (Descrição da parte feita ...)
-- [Jasom Rocha](https://github.com/JasomRocha) - (Descrição da parte feita ...)
+- [Gustavo Gomez]() - (Descrição da parte feita: )
+- [Igor Matheus](https://github.com/Igor-Matheus) - (Descrição da parte feita: )
+- [Jasom Rocha](https://github.com/JasomRocha) - (Descrição da parte feita: )
+
