@@ -68,7 +68,7 @@ g++ geometry.cpp robot.cpp -o robot -lopengl32 -lglu32 -lfreeglut
 
 ## 👨‍💻 Autoria
 Projeto desenvolvido por:
-- [Gustavo Gomez]() - (Descrição da parte feita: )
+- [Gustavo Gomes](https://github.com/IGustaMe) - Desenhos esquemáticos e de textura. Modelagem da cabeça do robô a partir de polígonos utilizando a função glBegin(GL_QUADS) para cada parte da TV. Aplicação das texturas em cada polígono.
 - [Igor Matheus](https://github.com/Igor-Matheus) - (Descrição da parte feita: )
 - [Jasom Rocha](https://github.com/JasomRocha) - Descrição da parte feita: Desenvolvi o corpo do robô juntamente com a primeira ideia de cenário, basicamente defini como se constrói um cilindro para visualização 3D e depois empilhei um total de 7 cilindros logo abaixo da cabeça (TV) do robô. Criei alguns inputs de movimentação do robô e fiz com que ele se desloque pelo cenário, de maneira que podemos observar sua movimentação olhando para os objetos que foram postos para compor a cena, isso é o inicio da abordagem final, e foi tudo que foi trabalhado por mim na primeira semana de desenvolvimento do projeto fazendo o commit das alterações hoje (27/09).
 
@@ -82,3 +82,4 @@ Projeto desenvolvido por:
 Estado do projeto em 29/09/2025
 
 <img width="524" height="577" alt="Captura de tela 2025-09-29 111455" src="https://github.com/user-attachments/assets/0a33b8a6-f6e1-40e1-a4ff-08cd5232538e" />
+
