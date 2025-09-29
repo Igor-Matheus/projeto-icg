@@ -33,9 +33,6 @@ float camHeight = 8.0f;
 
 // AS VARIÁVEIS camX, camY, camZ, camAngleY, walkSpeed FORAM SUBSTITUÍDAS 
 // PELA NOVA LÓGICA DE ÓRBITA.
-
-float arm_shoulder_z_angle = -25.0f; // Rotação do ombro (para cima/baixo)
-float arm_elbow_z_angle = -25.0f;    // Rotação do cotovelo
 // --- FIM das Variáveis Globais ---
 
 // Funções de desenho do arquivo geometry.c são declaradas via geometry.h
@@ -119,9 +116,6 @@ void display(void)
         glRotatef((GLfloat)elbow, 0.0, 1.0, 0.0);
         glRotatef((GLfloat)shoulder, 1.0, 0.0, 0.0);
 
-        drawRobotArm(1);  // Braço Direito (side=1)
-        drawRobotArm(-1); // Braço Esquerdo (side=-1)
-
         Head();
         drawBodyStackedCylinders();
 
@@ -147,9 +141,6 @@ void keyboard (unsigned char key, int x, int y)
     // para "dentro da tela" (Z negativo), e que a lógica de 180 graus funcione.
     float dirX = sin(rad) * robotSpeed; 
     float dirZ = -cos(rad) * robotSpeed; // <-- CORREÇÃO AQUI
-    
-    // Velocidade de ajuste dos ângulos do braço
-    const float ANGLE_STEP = 5.0f; 
     
     switch (key) {
         // --- CONTROLES DO ROBÔ (Movimento Global) ---
@@ -190,39 +181,6 @@ void keyboard (unsigned char key, int x, int y)
         case 'e': elbow = (elbow + 5) % 360; break;
         case 'E': elbow = (elbow - 5) % 360; break;
         
-        // --- CONTROLE DE ARTICULAÇÃO (Cotovelo/Cabeça) - Usaremos X, J para o braço ---
-        // Removido o case 'e' / 'E' para usar teclas mais intuitivas para o braço
-
-        // --- NOVO: CONTROLE DO OMBRO (Z/H) ---
-        case 'z': // Abaixar o braço (Z é a tecla mais baixa, bom para abaixar)
-        case 'Z':
-            arm_shoulder_z_angle -= ANGLE_STEP;
-            // Limite para baixo (ex: até 90 graus de inclinação)
-            if (arm_shoulder_z_angle < -90.0f) arm_shoulder_z_angle = -90.0f;
-            break;
-            
-        case 'h': // Levantar o braço (H é a tecla mais alta, bom para levantar)
-        case 'H':
-            arm_shoulder_z_angle += ANGLE_STEP;
-            // Limite para cima (ex: até 45 graus acima da horizontal)
-            if (arm_shoulder_z_angle > 45.0f) arm_shoulder_z_angle = 45.0f;
-            break;
-            
-        // --- NOVO: CONTROLE DO COTOVELO (X/J) ---
-        case 'x': // Dobrar o cotovelo (X é próximo do Z, bom para o próximo segmento)
-        case 'X':
-            arm_elbow_z_angle -= ANGLE_STEP;
-            // Limite para dobrar (ex: 150 graus fechado)
-            if (arm_elbow_z_angle < -150.0f) arm_elbow_z_angle = -150.0f;
-            break;
-            
-        case 'j': // Esticar o cotovelo (J é próximo do H, bom para esticar)
-        case 'J':
-            arm_elbow_z_angle += ANGLE_STEP;
-            // Limite para esticar (evita que o braço vá para trás)
-            if (arm_elbow_z_angle > 0.0f) arm_elbow_z_angle = 0.0f;
-            break;
-
         // --- NOVO: CONTROLE DE INCLINAÇÃO DO CORPO (K/L) ---
         case 'k': // Inclinar para frente (eixo X positivo)
         case 'K':
