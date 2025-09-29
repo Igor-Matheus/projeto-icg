@@ -78,3 +78,7 @@ Projeto desenvolvido por:
 -- evidência 2 
 <img width="562" height="635" alt="Captura de tela 2025-09-27 132505" src="https://github.com/user-attachments/assets/14092173-8cd3-40dd-a361-6d3327f3e8e6" />
 
+
+Estado do projeto em 29/09/2025
+
+<img width="524" height="577" alt="Captura de tela 2025-09-29 111455" src="https://github.com/user-attachments/assets/0a33b8a6-f6e1-40e1-a4ff-08cd5232538e" />
