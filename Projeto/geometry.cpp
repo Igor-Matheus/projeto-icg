@@ -8,6 +8,7 @@
 static GLuint texName;
 #endif
 
+
 // --- loadTexture (IMPLEMENTAÇÃO) ---
 void loadTexture ( const char * filename ) {
     int width , height , nrChannels ;
@@ -82,36 +83,78 @@ void drawCappedCylinderZ(float radius, float height, int slices, int stacks) {
     gluDeleteQuadric(q);
 }
 
-// --- drawBaseWithWheels (IMPLEMENTAÇÃO) ---
 void drawBaseWithWheels(float base_x, float base_y, float base_z) {
     glPushMatrix();
 
-    // Base (Caixa Sólida)
-    glColor3f(0.4f, 0.4f, 0.45f); 
-    glScalef(base_x, base_y, base_z); 
-    glutSolidCube(1.0);
-    glScalef(1.0/base_x, 1.0/base_y, 1.0/base_z); 
+    // --- BASE COM TEXTURA ---
+    glEnable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);  // Para a textura não sofrer iluminação
+    loadTexture("textura_cabeca.png");
+    glBindTexture(GL_TEXTURE_2D, texName);
 
-    // Dimensões da roda
+    glPushMatrix();
+        glScalef(base_x, base_y, base_z);
+
+        glBegin(GL_QUADS);
+            // Frente
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.5f,  0.5f);
+            glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.5f, -0.5f,  0.5f);
+            glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f,  0.5f,  0.5f);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f,  0.5f,  0.5f);
+            // Trás
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.5f, -0.5f);
+            glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.5f, -0.5f, -0.5f);
+            glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f,  0.5f, -0.5f);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f,  0.5f, -0.5f);
+            // Laterais...
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.5f, -0.5f);
+            glTexCoord2f(1.0f, 0.0f); glVertex3f(-0.5f, -0.5f,  0.5f);
+            glTexCoord2f(1.0f, 1.0f); glVertex3f(-0.5f,  0.5f,  0.5f);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f,  0.5f, -0.5f);
+
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(0.5f, -0.5f, -0.5f);
+            glTexCoord2f(1.0f, 0.0f); glVertex3f(0.5f, -0.5f,  0.5f);
+            glTexCoord2f(1.0f, 1.0f); glVertex3f(0.5f,  0.5f,  0.5f);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(0.5f,  0.5f, -0.5f);
+
+            // Topo
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, 0.5f, -0.5f);
+            glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.5f, 0.5f, -0.5f);
+            glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f, 0.5f,  0.5f);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, 0.5f,  0.5f);
+
+            // Fundo
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.5f, -0.5f);
+            glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.5f, -0.5f, -0.5f);
+            glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f, -0.5f,  0.5f);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, -0.5f,  0.5f);
+        glEnd();
+    glPopMatrix();
+
+    glEnable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+
+    // --- RODAS ---
     float inner_radius = 0.15f; 
     float outer_radius = 0.45f; 
-    
-    // Calcula offsets para posicionar as rodas nas BORDAS da base
     float wheel_pos_x = base_x / 2.0f; 
-    float wheel_pos_y = 0.0f;          
+    float wheel_pos_y = 0.0f; 
     float wheel_pos_z = base_z / 2.0f - inner_radius * 2; 
-    
-    // Cor da Roda - PRETO (Corrigida para valores RGB válidos 0-1)
-    glColor3f(0.0f, 0.0f, 0.0f); 
 
-    // Desenhar as quatro rodas (Toroides em pé)
-    glPushMatrix(); glTranslatef(-wheel_pos_x, wheel_pos_y, -wheel_pos_z); glRotatef(90.0f, 0.0f, 1.0f, 0.0f); glutSolidTorus(inner_radius, outer_radius, 16, 32); glPopMatrix();
-    glPushMatrix(); glTranslatef(wheel_pos_x, wheel_pos_y, -wheel_pos_z); glRotatef(90.0f, 0.0f, 1.0f, 0.0f); glutSolidTorus(inner_radius, outer_radius, 16, 32); glPopMatrix();
-    glPushMatrix(); glTranslatef(-wheel_pos_x, wheel_pos_y, wheel_pos_z); glRotatef(90.0f, 0.0f, 1.0f, 0.0f); glutSolidTorus(inner_radius, outer_radius, 16, 32); glPopMatrix();
-    glPushMatrix(); glTranslatef(wheel_pos_x, wheel_pos_y, wheel_pos_z); glRotatef(90.0f, 0.0f, 1.0f, 0.0f); glutSolidTorus(inner_radius, outer_radius, 16, 32); glPopMatrix();
+    glColor3f(0.0f, 0.0f, 0.0f); 
+    for(int ix=-1; ix<=1; ix+=2){
+        for(int iz=-1; iz<=1; iz+=2){
+            glPushMatrix();
+                glTranslatef(ix*wheel_pos_x, wheel_pos_y, iz*wheel_pos_z);
+                glRotatef(90.0f,0,1,0);
+                glutSolidTorus(inner_radius, outer_radius, 16,32);
+            glPopMatrix();
+        }
+    }
 
     glPopMatrix();
 }
+
 
 // --- drawBodyStackedCylinders (IMPLEMENTAÇÃO) ---
 void drawBodyStackedCylinders() {
@@ -335,5 +378,180 @@ void drawSceneObjects() {
         glRotatef(90.0f, 1.0f, 0.0f, 0.0f); // Gira para ficar em pé
         // Usa a função auxiliar do seu robô
         drawCappedCylinderZ(1.5, 10.0, 16, 4); 
+    glPopMatrix();
+}
+
+void drawArmSegment(float length, float radius, float angle, float x, float y, float z) {
+    glPushMatrix();
+        // Translação para a posição inicial do segmento
+        glTranslatef(x, y, z);
+        // Rotação da articulação do segmento
+        glRotatef(angle, 0.0, 1.0, 1.0);
+
+        // Cada braço será composto por 3 cilindros menores
+        float partLength = length / 3.0f;
+
+        for (int i = 0; i < 3; i++) {
+            glPushMatrix();
+                // Desloca cada parte ao longo do X (já que o braço se estende nesse eixo)
+                glTranslatef(i * partLength, 0.0f, 0.0f);
+
+                // Orienta o cilindro no eixo X
+                glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+                // --- MESMA COR DO CORPO ---
+                glColor3f(0.75f, 0.75f, 0.75f); // preenchimento
+
+                // Desenha o cilindro curto
+                drawCappedCylinderZ(radius, partLength, 16, 4);
+            glPopMatrix();
+        }
+    glPopMatrix();
+}
+
+void drawHand(int side) { 
+    // Dimensões
+    const float WRIST_RADIUS = 0.15f;    
+    const float PALM_WIDTH = 0.5f;       
+    const float PALM_THICKNESS = 0.3f;   
+    const float PALM_LENGTH = 0.8f;      
+    const float FINGER_JOINT_SIZE = 0.2f; 
+    const float FINGER_WIDTH = 0.1f;    
+    const float FINGER_LENGTH = 0.6f;    
+    
+    // Cores em Tons de Azul
+    GLfloat dark_blue_metal[] = {0.1f, 0.2f, 0.4f, 1.0f}; 
+    GLfloat bright_blue_metal[] = {0.4f, 0.6f, 1.0f, 1.0f}; 
+
+    // --- 1. Pulso e Palma ---
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, bright_blue_metal);
+    glPushMatrix();
+        glutSolidSphere(WRIST_RADIUS, 16, 16); 
+    glPopMatrix();
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, dark_blue_metal);
+    glPushMatrix();
+        glTranslatef(WRIST_RADIUS + PALM_LENGTH / 2.0f, 0.0f, 0.0f);
+        glScalef(PALM_LENGTH, PALM_WIDTH, PALM_THICKNESS);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    // --- 2. Função Auxiliar para Desenhar um Dedo (Lambda) ---
+    // Nota: Mantenha esta lambda function ou a mova para fora se seu compilador não suportar.
+    auto drawFinger = [&](float x, float y, float z, float rot_y) {
+        
+        glPushMatrix();
+            glTranslatef(x, y, z);
+            glRotatef(rot_y, 0.0f, 1.0f, 0.0f); 
+
+            // Junta Esférica
+            glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, bright_blue_metal);
+            glutSolidSphere(FINGER_JOINT_SIZE / 2.0f, 8, 8); 
+
+            // Segmento 1
+            glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, dark_blue_metal);
+            glPushMatrix();
+                glTranslatef(FINGER_JOINT_SIZE / 2.0f, 0.0f, 0.0f);
+                glRotatef(90.0f, 0.0f, 1.0f, 0.0f); 
+                drawCappedCylinderZ(FINGER_WIDTH, FINGER_LENGTH / 2.0f, 8, 2);
+            glPopMatrix();
+
+            // Segmento 2 (Meio)
+            glPushMatrix();
+                glTranslatef(FINGER_JOINT_SIZE / 2.0f + FINGER_LENGTH / 2.0f, 0.0f, 0.0f);
+                glRotatef(90.0f, 0.0f, 1.0f, 0.0f); 
+                drawCappedCylinderZ(FINGER_WIDTH * 0.8f, FINGER_LENGTH / 2.0f, 8, 2); 
+            glPopMatrix();
+
+            // Ponta do Dedo
+            glPushMatrix();
+                glTranslatef(FINGER_JOINT_SIZE / 2.0f + FINGER_LENGTH, 0.0f, 0.0f);
+                glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, bright_blue_metal);
+                glutSolidSphere(FINGER_WIDTH * 0.8f, 8, 8);
+            glPopMatrix();
+
+        glPopMatrix();
+    };
+
+    // --- 3. Posições dos Dedos na Palma ---
+
+    float base_x = WRIST_RADIUS + PALM_LENGTH; 
+    
+    // Dedos (Indicador, Médio, Anelar, Mínimo)
+    drawFinger(base_x, PALM_WIDTH * 0.4f, 0.0f, 0.0f); 
+    drawFinger(base_x, PALM_WIDTH * 0.1f, 0.0f, 0.0f); 
+    drawFinger(base_x, -PALM_WIDTH * 0.2f, 0.0f, 0.0f); 
+    drawFinger(base_x * 0.95f, -PALM_WIDTH * 0.4f, 0.0f, 0.0f); 
+
+    // Polegar (CORRIGIDO PARA SIMETRIA)
+    glPushMatrix();
+        glTranslatef(WRIST_RADIUS * 1.5f, PALM_WIDTH / 2.0f, PALM_THICKNESS / 2.0f); 
+        
+        // *** CORREÇÃO DO POLEGAR ***
+        if (side == -1) {
+            // Se for o braço esquerdo, inverte o eixo Y do polegar para que ele 
+            // aponte para a frente/corpo, e não para as costas.
+            glScalef(1.0f, -1.0f, 1.0f); 
+        }
+        
+        glRotatef(90.0f, 0.0f, 0.0f, 1.0f); 
+        drawFinger(0.0f, 0.0f, 0.0f, 0.0f);
+    glPopMatrix();
+    
+    // Volta ao material padrão (IMPORTANTE)
+    GLfloat default_color[] = {1.0, 1.0, 1.0, 1.0};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, default_color);
+}
+
+void drawRobotArm(int side) { // side = 1 para direito, -1 para esquerdo
+    const float ARM_RADIUS = 0.3f;
+    const float UPPER_ARM_LENGTH = 2.5f;
+    const float FOREARM_LENGTH = 2.5f;
+
+    float shoulder_pivot_y = -2.5f; // altura do ombro abaixo da cabeça
+    // Posicionamento corrigido para encostar no corpo
+    float shoulder_pivot_x = (-0.3f + ARM_RADIUS) * side + 3.0f; 
+
+    glPushMatrix();
+        // 1. Translação para o ombro
+        glTranslatef(shoulder_pivot_x, shoulder_pivot_y, -1.5f);
+        
+        // --- Correção de Orientação e Simetria do Braço ---
+        if (side == 1) { // Braço Direito
+             // Rotação de 180 em Y para o braço desenhar para dentro (em direção ao corpo)
+             glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+        } else if (side == -1) { // Braço Esquerdo
+            // Espelhamento real (-1.0) e rotação de 180 em Y para a mão ficar orientada para frente.
+            glScalef(-1.0f, 1.0f, 1.0f); 
+            glRotatef(180.0f, 0.0f, 1.0f, 0.0f); 
+        }
+        // ----------------------------------------------------
+
+        // Ombro (Segmento Superior)
+        glPushMatrix();
+            // Controlado pelo teclado (Z/H)
+            glRotatef(arm_shoulder_z_angle, 0.0f, 0.0f, 1.0f); 
+            drawArmSegment(UPPER_ARM_LENGTH, ARM_RADIUS, 0, 0, 0, 0);
+
+            // Vai até o cotovelo
+            glTranslatef(UPPER_ARM_LENGTH, 0.0f, 0.0f);
+
+            // Cotovelo (Segmento Inferior)
+            glPushMatrix();
+                // Controlado pelo teclado (X/J)
+                glRotatef(arm_elbow_z_angle, 0.0f, 0.0f, 1.0f);
+                drawArmSegment(FOREARM_LENGTH, ARM_RADIUS, 0, 0, 0, 0);
+                
+                // Vai até o pulso (ponta do antebraço)
+                glTranslatef(FOREARM_LENGTH, 0.0f, 0.0f); 
+
+                // *** ROTAÇÃO DO PULSO PARA VIRAR A MÃO PARA DENTRO ***
+                // -90 * side -> Vira as palmas para o corpo em ambos os lados.
+                glRotatef(-90.0f * side, 1.0f, 0.0f, 0.0f); 
+                
+                // *** CHAMADA FINAL DA MÃO ***
+                drawHand(side); // <-- PASSA O 'side' PARA CORRIGIR O POLEGAR
+                
+            glPopMatrix(); 
+        glPopMatrix(); 
     glPopMatrix();
 }
