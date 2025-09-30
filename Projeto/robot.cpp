@@ -33,6 +33,20 @@ float camHeight = 8.0f;
 
 // AS VARIÁVEIS camX, camY, camZ, camAngleY, walkSpeed FORAM SUBSTITUÍDAS 
 // PELA NOVA LÓGICA DE ÓRBITA.
+
+float arm_shoulder_z_angle = -25.0f; // Rotação do ombro (para cima/baixo)
+float arm_elbow_z_angle = -25.0f;    // Rotação do cotovelo
+
+// Lista de texturas possíveis para o rosto
+std::vector<std::string> faceTextures = {
+    "Tela.png",       // rosto padrão
+    "teste.jpg",      // variação 1
+    "rosto.png",      // variação 2
+};
+
+int currentFaceIndex = 0; // Começa no rosto padrão
+bool currentIlumination = false;
+
 // --- FIM das Variáveis Globais ---
 
 // Funções de desenho do arquivo geometry.c são declaradas via geometry.h
@@ -45,24 +59,15 @@ void init(void)
     glShadeModel(GL_SMOOTH); 
     glEnable(GL_COLOR_MATERIAL); 
     
-    // ILUMINAÇÃO e MATERIAIS
+    // MATERIAIS
     GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
     GLfloat mat_shininess[] = { 50.0 };
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-    GLfloat light0_ambient[] = { 0.2, 0.2, 0.2, 1.0 }; 
-    GLfloat light0_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat light0_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat light0_position[] = { 20.0, 30.0, 20.0, 1.0 }; 
+    // Iluminação inicial
+    applyLighting();
 
-    glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_diffuse);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light0_specular);
-    glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
-
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
     glLineWidth(2.0f); 
     glEnable(GL_LINE_SMOOTH); 
@@ -73,6 +78,8 @@ void init(void)
 void display(void)
 {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    applyLighting();
     
     // 1. CÂMERA DE ÓRBITA (TERCEIRA PESSOA)
     glLoadIdentity();
@@ -92,11 +99,12 @@ void display(void)
     gluLookAt(camX, camY, camZ,       // Eye position (Calculada para orbitar)
               targetX, targetY, targetZ,    // Center (Sempre olhando para o robô)
               0.0, 1.0, 0.0);        
-    
+              
     // Desenho do Cenário
     drawCelestialBody();
     drawGround();
     drawSceneObjects();
+    drawSceneElements();
     // 2. TRANSFORMAÇÕES GLOBAIS DO ROBÔ (Movimento e Rotação)
      glPushMatrix();
         // Move o robô para sua posição global no mundo
@@ -115,6 +123,9 @@ void display(void)
         // Rotação de Articulação (Ombro/Cotovelo) - Continua funcionando
         glRotatef((GLfloat)elbow, 0.0, 1.0, 0.0);
         glRotatef((GLfloat)shoulder, 1.0, 0.0, 0.0);
+
+        drawRobotArm(1);  // Braço Direito (side=1)
+        drawRobotArm(-1); // Braço Esquerdo (side=-1)
 
         Head();
         drawBodyStackedCylinders();
@@ -141,6 +152,9 @@ void keyboard (unsigned char key, int x, int y)
     // para "dentro da tela" (Z negativo), e que a lógica de 180 graus funcione.
     float dirX = sin(rad) * robotSpeed; 
     float dirZ = -cos(rad) * robotSpeed; // <-- CORREÇÃO AQUI
+    
+    // Velocidade de ajuste dos ângulos do braço
+    const float ANGLE_STEP = 5.0f; 
     
     switch (key) {
         // --- CONTROLES DO ROBÔ (Movimento Global) ---
@@ -177,10 +191,43 @@ void keyboard (unsigned char key, int x, int y)
             camOrbitAngle += 5.0f;
             break;
 
-         // --- CONTROLE DE ARTICULAÇÃO (Cotovelo/Cabeça) ---
+        // --- Robô gira no sentido anti-horário ---
         case 'e': elbow = (elbow + 5) % 360; break;
         case 'E': elbow = (elbow - 5) % 360; break;
         
+        // --- CONTROLE DE ARTICULAÇÃO (Cotovelo/Cabeça) - Usaremos X, J para o braço ---
+        // Removido o case 'e' / 'E' para usar teclas mais intuitivas para o braço
+
+        // --- NOVO: CONTROLE DO OMBRO (Z/H) ---
+        case 'z': // Abaixar o braço (Z é a tecla mais baixa, bom para abaixar)
+        case 'Z':
+            arm_shoulder_z_angle -= ANGLE_STEP;
+            // Limite para baixo (ex: até 90 graus de inclinação)
+            if (arm_shoulder_z_angle < -90.0f) arm_shoulder_z_angle = -90.0f;
+            break;
+            
+        case 'h': // Levantar o braço (H é a tecla mais alta, bom para levantar)
+        case 'H':
+            arm_shoulder_z_angle += ANGLE_STEP;
+            // Limite para cima (ex: até 45 graus acima da horizontal)
+            if (arm_shoulder_z_angle > 45.0f) arm_shoulder_z_angle = 45.0f;
+            break;
+            
+        // --- NOVO: CONTROLE DO COTOVELO (X/J) ---
+        case 'x': // Dobrar o cotovelo (X é próximo do Z, bom para o próximo segmento)
+        case 'X':
+            arm_elbow_z_angle -= ANGLE_STEP;
+            // Limite para dobrar (ex: 150 graus fechado)
+            if (arm_elbow_z_angle < -150.0f) arm_elbow_z_angle = -150.0f;
+            break;
+            
+        case 'j': // Esticar o cotovelo (J é próximo do H, bom para esticar)
+        case 'J':
+            arm_elbow_z_angle += ANGLE_STEP;
+            // Limite para esticar (evita que o braço vá para trás)
+            if (arm_elbow_z_angle > 0.0f) arm_elbow_z_angle = 0.0f;
+            break;
+
         // --- NOVO: CONTROLE DE INCLINAÇÃO DO CORPO (K/L) ---
         case 'k': // Inclinar para frente (eixo X positivo)
         case 'K':
@@ -190,6 +237,16 @@ void keyboard (unsigned char key, int x, int y)
         case 'l': // Inclinar para trás (eixo X negativo)
         case 'L':
             if (bodyTilt > -25.0f) bodyTilt -= 5.0f; // Limite a -25 graus
+            break;
+        
+        case 't': // trocar rosto do robô
+        case 'T':
+            currentFaceIndex = (currentFaceIndex + 1) % faceTextures.size();
+            break;
+
+        case 'q': // trocar iluminação da cena
+        case 'Q':
+            currentIlumination = !currentIlumination;
             break;
             
         case 27: exit(0);
