@@ -36,6 +36,17 @@ float camHeight = 8.0f;
 
 float arm_shoulder_z_angle = -25.0f; // Rotação do ombro (para cima/baixo)
 float arm_elbow_z_angle = -25.0f;    // Rotação do cotovelo
+
+// Lista de texturas possíveis para o rosto
+std::vector<std::string> faceTextures = {
+    "Tela.png",       // rosto padrão
+    "teste.jpg",      // variação 1
+    "rosto.png",      // variação 2
+};
+
+int currentFaceIndex = 0; // Começa no rosto padrão
+bool currentIlumination = false;
+
 // --- FIM das Variáveis Globais ---
 
 // Funções de desenho do arquivo geometry.c são declaradas via geometry.h
@@ -48,24 +59,15 @@ void init(void)
     glShadeModel(GL_SMOOTH); 
     glEnable(GL_COLOR_MATERIAL); 
     
-    // ILUMINAÇÃO e MATERIAIS
+    // MATERIAIS
     GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
     GLfloat mat_shininess[] = { 50.0 };
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-    GLfloat light0_ambient[] = { 0.2, 0.2, 0.2, 1.0 }; 
-    GLfloat light0_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat light0_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat light0_position[] = { 20.0, 30.0, 20.0, 1.0 }; 
+    // Iluminação inicial
+    applyLighting();
 
-    glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_diffuse);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light0_specular);
-    glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
-
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
     glLineWidth(2.0f); 
     glEnable(GL_LINE_SMOOTH); 
@@ -76,6 +78,8 @@ void init(void)
 void display(void)
 {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    applyLighting();
     
     // 1. CÂMERA DE ÓRBITA (TERCEIRA PESSOA)
     glLoadIdentity();
@@ -95,11 +99,12 @@ void display(void)
     gluLookAt(camX, camY, camZ,       // Eye position (Calculada para orbitar)
               targetX, targetY, targetZ,    // Center (Sempre olhando para o robô)
               0.0, 1.0, 0.0);        
-    
+              
     // Desenho do Cenário
     drawCelestialBody();
     drawGround();
     drawSceneObjects();
+    drawSceneElements();
     // 2. TRANSFORMAÇÕES GLOBAIS DO ROBÔ (Movimento e Rotação)
      glPushMatrix();
         // Move o robô para sua posição global no mundo
@@ -186,7 +191,7 @@ void keyboard (unsigned char key, int x, int y)
             camOrbitAngle += 5.0f;
             break;
 
-         // --- CONTROLE DE ARTICULAÇÃO (Cotovelo/Cabeça) ---
+        // --- Robô gira no sentido anti-horário ---
         case 'e': elbow = (elbow + 5) % 360; break;
         case 'E': elbow = (elbow - 5) % 360; break;
         
@@ -232,6 +237,16 @@ void keyboard (unsigned char key, int x, int y)
         case 'l': // Inclinar para trás (eixo X negativo)
         case 'L':
             if (bodyTilt > -25.0f) bodyTilt -= 5.0f; // Limite a -25 graus
+            break;
+        
+        case 't': // trocar rosto do robô
+        case 'T':
+            currentFaceIndex = (currentFaceIndex + 1) % faceTextures.size();
+            break;
+
+        case 'q': // trocar iluminação da cena
+        case 'Q':
+            currentIlumination = !currentIlumination;
             break;
             
         case 27: exit(0);

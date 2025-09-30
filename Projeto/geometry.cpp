@@ -268,7 +268,7 @@ void Head(){
     // TELA
     glColor3f (1, 1, 1);
     glEnable(GL_TEXTURE_2D);
-    loadTexture("Tela.png");
+    loadTexture(faceTextures[currentFaceIndex].c_str());
     glBindTexture(GL_TEXTURE_2D, texName);
     glBegin(GL_QUADS);
         glTexCoord2f(0.0, 1.0); glVertex3f(0.5, 0.5, -0.5);
@@ -334,7 +334,7 @@ void drawCelestialBody() {
 
 // NOVO: Função para desenhar o chão
 void drawGround() {
-    glColor3f(0.3f, 0.4f, 0.3f); 
+    glColor3f(1.0f, 1.0f, 0.4f); // cor semelhante à da areia 
 
     float ground_y = -12.0f;
     float size = 100.0f; // VALOR AUMENTADO para 100.0f para um chão maior
@@ -379,6 +379,115 @@ void drawSceneObjects() {
         // Usa a função auxiliar do seu robô
         drawCappedCylinderZ(1.5, 10.0, 16, 4); 
     glPopMatrix();
+}
+
+// -------------------------------------------------------------
+// Elementos extras: algas, pedras, bolhas
+// -------------------------------------------------------------
+void drawSeaweed(float x, float z) {
+    glPushMatrix();
+    glTranslatef(x, -8.0f, z);
+    glColor3f(0.0f, 0.7f, 0.0f);
+    for (int i = 0; i < 8; i++) {              // mais segmentos
+        glPushMatrix();
+        glTranslatef(0, i * 0.4f, 0);         // mais espaçamento
+        glutSolidSphere(0.5, 10, 10);        // esferas maiores
+        glPopMatrix();
+    }
+    glPopMatrix();
+}
+
+void drawRock(float x, float z) {
+    glPushMatrix();
+    glTranslatef(x, -12.5f, z);    
+    glColor3f(0.3f, 0.3f, 0.3f);
+    glutSolidSphere(3.0, 20, 20);             // pedras bem maiores
+    glPopMatrix();
+}
+
+void drawBubble(float x, float y, float z) {
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glColor4f(0.8f, 0.9f, 1.0f, 0.4f);
+    glutSolidSphere(0.15, 12, 12);            // bolhas maiores
+    glPopMatrix();
+}
+
+void drawSceneElements() {
+    // Algas mais ao fundo
+    drawSeaweed(-20.0f, -10.0f); 
+    drawSeaweed(-22.5f, -12.5f);
+
+    // Pedras maiores, fundo
+    drawRock(20.0f, -35.0f);  
+    drawRock(5.5f, -20.5f);
+
+    // Bolhas mais ao fundo
+    for (int i = 0; i < 6; i++) {
+        drawBubble(-20.0f, -4.5f + i * 0.6f, -10.5f);
+    }
+}
+
+// -------------------------------------------------------------
+// Iluminação estilo fundo do mar
+// -------------------------------------------------------------
+void setupLighting() {
+    // Componente AMBIENTE 
+    // Luz ambiente é a "cor de base" da cena, espalhada igualmente
+    // Não depende da posição da fonte nem do ângulo do objeto
+    // Azul-esverdeado bem suave para dar clima subaquático
+    GLfloat lightAmbient[]  = { 0.0f, 0.2f, 0.4f, 1.0f };
+
+    // Componente DIFUSA
+    // Luz difusa depende do ângulo da superfície em relação à fonte de luz
+    // Dá a sensação de volume (um lado iluminado, outro sombreado)
+    // Azul claro para simular a luz do sol atravessando a água
+    GLfloat lightDiffuse[]  = { 0.2f, 0.6f, 0.8f, 1.0f };
+
+    // Componente ESPECULAR 
+    // Especular é o brilho concentrado/reflexo que aparece em superfícies brilhantes
+    // Depende da posição do observador + direção da luz
+    // Quase branco (0.9, 0.9, 0.9) para reflexos discretos
+    GLfloat lightSpecular[] = { 0.9f, 0.9f, 0.9f, 1.0f };
+
+    // Posição da luz
+    // Define de onde a luz vem
+    // Último valor (1.0) -> luz PONTUAL, como uma lâmpada localizada
+    // Se fosse 0.0 -> luz DIRECIONAL, como o sol vindo do infinito
+    // Mesma posição da iluminação sem ser no fundo do mar
+    GLfloat lightPosition[] = { 20.0, 30.0, 20.0, 1.0 };
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+}
+
+void applyLighting() {
+    if (currentIlumination) {
+        
+        GLfloat light0_ambient[] = { 0.2, 0.2, 0.2, 1.0 }; 
+        GLfloat light0_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+        GLfloat light0_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+        GLfloat light0_position[] = { 20.0, 30.0, 20.0, 1.0 }; 
+
+        glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_diffuse);
+        glLightfv(GL_LIGHT0, GL_SPECULAR, light0_specular);
+        glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
+
+        glEnable(GL_LIGHTING); 
+        glEnable(GL_LIGHT0);
+
+    } else {
+        // Iluminação fundo do mar
+        setupLighting();
+    }
 }
 
 void drawArmSegment(float length, float radius, float angle, float x, float y, float z) {
