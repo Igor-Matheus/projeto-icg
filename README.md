@@ -63,7 +63,15 @@ Um esquema em desenho das partes que compõem o robô:
 ## 🖼️ Imagens do programa
 Imagens e/ou GIF's do programa em execução:  
 
-![Exemplo do robô Karen](./images/karen_robot.png)  
+![Exemplo do robô Karen](./images/execution_01.PNG)
+
+![Exemplo do robô Karen](./images/execution_02.PNG)  
+
+![Exemplo do robô Karen](./images/execution_03.PNG)  
+
+![Exemplo do robô Karen](./images/execution_04.PNG)  
+
+![Exemplo do robô Karen](./images/execution_05.PNG)  
 
 
 ## ⚙️ Como compilar e executar
