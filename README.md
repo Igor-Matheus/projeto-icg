@@ -41,8 +41,8 @@ O robô Karen e a cena podem ser controlados via teclado. Abaixo estão todas as
 - **E** : Girar o robô no sentido horário  
 
 ### 🔹 Inclinação do Corpo  
-- **K / k** : Inclinar o corpo para frente (até 25°)  
-- **L / l** : Inclinar o corpo para trás (até -25°)  
+- **K / k** : Inclinar o corpo para frente
+- **L / l** : Inclinar o corpo para trás  
 
 ### 🔹 Aparência e Cena  
 - **T / t** : Trocar o rosto da Karen  
@@ -121,6 +121,7 @@ Projeto desenvolvido por:
 ### evidênica 3 (29/09) - [Jasom Rocha](https://github.com/JasomRocha)
 
 <img width="524" height="577" alt="Captura de tela 2025-09-29 111455" src="https://github.com/user-attachments/assets/0a33b8a6-f6e1-40e1-a4ff-08cd5232538e" />
+
 
 
 
