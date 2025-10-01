@@ -8,6 +8,7 @@
 static GLuint texName;
 #endif
 
+
 // --- loadTexture (IMPLEMENTAÇÃO) ---
 void loadTexture ( const char * filename ) {
     int width , height , nrChannels ;
@@ -82,39 +83,81 @@ void drawCappedCylinderZ(float radius, float height, int slices, int stacks) {
     gluDeleteQuadric(q);
 }
 
-// --- drawBaseWithWheels (IMPLEMENTAÇÃO) ---
 void drawBaseWithWheels(float base_x, float base_y, float base_z) {
     glPushMatrix();
 
-    // Base (Caixa Sólida)
-    glColor3f(0.4f, 0.4f, 0.45f); 
-    glScalef(base_x, base_y, base_z); 
-    glutSolidCube(1.0);
-    glScalef(1.0/base_x, 1.0/base_y, 1.0/base_z); 
+    // --- BASE COM TEXTURA ---
+    glEnable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);  // Para a textura não sofrer iluminação
+    loadTexture("textura_cabeca.png");
+    glBindTexture(GL_TEXTURE_2D, texName);
 
-    // Dimensões da roda
+    glPushMatrix();
+        glScalef(base_x, base_y, base_z);
+
+        glBegin(GL_QUADS);
+            // Frente
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.5f,  0.5f);
+            glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.5f, -0.5f,  0.5f);
+            glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f,  0.5f,  0.5f);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f,  0.5f,  0.5f);
+            // Trás
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.5f, -0.5f);
+            glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.5f, -0.5f, -0.5f);
+            glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f,  0.5f, -0.5f);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f,  0.5f, -0.5f);
+            // Laterais...
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.5f, -0.5f);
+            glTexCoord2f(1.0f, 0.0f); glVertex3f(-0.5f, -0.5f,  0.5f);
+            glTexCoord2f(1.0f, 1.0f); glVertex3f(-0.5f,  0.5f,  0.5f);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f,  0.5f, -0.5f);
+
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(0.5f, -0.5f, -0.5f);
+            glTexCoord2f(1.0f, 0.0f); glVertex3f(0.5f, -0.5f,  0.5f);
+            glTexCoord2f(1.0f, 1.0f); glVertex3f(0.5f,  0.5f,  0.5f);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(0.5f,  0.5f, -0.5f);
+
+            // Topo
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, 0.5f, -0.5f);
+            glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.5f, 0.5f, -0.5f);
+            glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f, 0.5f,  0.5f);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, 0.5f,  0.5f);
+
+            // Fundo
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.5f, -0.5f);
+            glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.5f, -0.5f, -0.5f);
+            glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f, -0.5f,  0.5f);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, -0.5f,  0.5f);
+        glEnd();
+    glPopMatrix();
+
+    glEnable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+
+    // --- RODAS ---
     float inner_radius = 0.15f; 
     float outer_radius = 0.45f; 
-    
-    // Calcula offsets para posicionar as rodas nas BORDAS da base
     float wheel_pos_x = base_x / 2.0f; 
-    float wheel_pos_y = 0.0f;          
+    float wheel_pos_y = 0.0f; 
     float wheel_pos_z = base_z / 2.0f - inner_radius * 2; 
-    
-    // Cor da Roda - PRETO (Corrigida para valores RGB válidos 0-1)
-    glColor3f(0.0f, 0.0f, 0.0f); 
 
-    // Desenhar as quatro rodas (Toroides em pé)
-    glPushMatrix(); glTranslatef(-wheel_pos_x, wheel_pos_y, -wheel_pos_z); glRotatef(90.0f, 0.0f, 1.0f, 0.0f); glutSolidTorus(inner_radius, outer_radius, 16, 32); glPopMatrix();
-    glPushMatrix(); glTranslatef(wheel_pos_x, wheel_pos_y, -wheel_pos_z); glRotatef(90.0f, 0.0f, 1.0f, 0.0f); glutSolidTorus(inner_radius, outer_radius, 16, 32); glPopMatrix();
-    glPushMatrix(); glTranslatef(-wheel_pos_x, wheel_pos_y, wheel_pos_z); glRotatef(90.0f, 0.0f, 1.0f, 0.0f); glutSolidTorus(inner_radius, outer_radius, 16, 32); glPopMatrix();
-    glPushMatrix(); glTranslatef(wheel_pos_x, wheel_pos_y, wheel_pos_z); glRotatef(90.0f, 0.0f, 1.0f, 0.0f); glutSolidTorus(inner_radius, outer_radius, 16, 32); glPopMatrix();
+    glColor3f(0.0f, 0.0f, 0.0f); 
+    for(int ix=-1; ix<=1; ix+=2){
+        for(int iz=-1; iz<=1; iz+=2){
+            glPushMatrix();
+                glTranslatef(ix*wheel_pos_x, wheel_pos_y, iz*wheel_pos_z);
+                glRotatef(90.0f,0,1,0);
+                glutSolidTorus(inner_radius, outer_radius, 16,32);
+            glPopMatrix();
+        }
+    }
 
     glPopMatrix();
 }
 
+
 // --- drawBodyStackedCylinders (IMPLEMENTAÇÃO) ---
-void drawBodyStackedCylinders() {
+void drawBodyStackedCylinders(float artStep, int baseTilt) {
     glPushMatrix();
     
     // Dimensões
@@ -130,17 +173,34 @@ void drawBodyStackedCylinders() {
     const float base_z = 2.5f * (radius + 0.8f); 
 
     // 1. Translação Inicial (Centro na Base da Cabeça: Y=0)
-    glTranslatef(3.0f, 0.0f, -1.375f); 
+    //glTranslatef(3.0f, 0.0f, -1.375f); 
 
     // 2. Desenha o Corpo (Rotacionado) e o Toroide de Junta
     glPushMatrix(); 
         glRotatef(-90.0f, 1.0f, 0.0f, 0.0f); 
 
         // Desenho dos cilindros
-        for (int i = 0; i < N; ++i) {
-            if(i == 2){
+        glPushMatrix();
+        glTranslatef(0, 0, -body_total_length);
+        glRotatef(baseTilt, 0.0f, 0.0f, 1.0f); // Aplica a rotação da base
+
+        for(int i = N; i >= 0; i--){
+            glRotatef(artStep, 1.0f, 0.0f, 0.0f); // Rotaciona cada cilindro
+
+            if(i == 1){
                 glPushMatrix();
-                glTranslatef(-0.75f, 0.0f, -i * (height + gap) + 0.6);
+
+                //Desenha os braços
+                glPushMatrix();
+                glRotatef(90, 1.0f, 0.0f, 0.0f);
+                glTranslatef(-3.0f - height/2, 2*height, height);
+                drawRobotArm(1);  // Braço Direito (side=1)
+                glTranslatef(height, 0, 0);
+                drawRobotArm(-1); // Braço Esquerdo (side=-1)
+                glPopMatrix();
+
+                //Desenha o ombro
+                glTranslatef(-0.75f, 0.0f, 0.6f);
                 glRotatef(90.0f, 0.0f, 1.0f, 0.0f); // Inclinação de 90 graus
                 glColor3f(0.75f, 0.75f, 0.85f);
                 drawCappedCylinderZ(radius, height, 32, 4); // Chamada completa
@@ -148,12 +208,18 @@ void drawBodyStackedCylinders() {
             }
 
             glPushMatrix();
-                glTranslatef(0.0f, 0.0f, -i * (height + gap));
-                glColor3f(0.75f, 0.75f, 0.85f);
-                drawCappedCylinderZ(radius, height, 32, 4); // Chamada completa
+            glColor3f(0.75f, 0.75f, 0.85f);
+            drawCappedCylinderZ(radius, height, 32, 4);
             glPopMatrix();
+
+            glTranslatef(0, 0, height + gap);
         }
-        
+        glTranslatef(-3.0f, -1.375f, 0.0f);
+        glRotatef(90 + artStep, 1.0f, 0.0f, 0.0f); // Rotaciona para frente
+        Head();
+
+        glPopMatrix();
+
         float junction_z_rot = -((float)(N - 1) * height + gap * (N - 1)); 
 
         // Toroide (Junta de Acoplamento)
@@ -225,7 +291,7 @@ void Head(){
     // TELA
     glColor3f (1, 1, 1);
     glEnable(GL_TEXTURE_2D);
-    loadTexture("Tela.png");
+    loadTexture(faceTextures[currentFaceIndex].c_str());
     glBindTexture(GL_TEXTURE_2D, texName);
     glBegin(GL_QUADS);
         glTexCoord2f(0.0, 1.0); glVertex3f(0.5, 0.5, -0.5);
@@ -291,7 +357,7 @@ void drawCelestialBody() {
 
 // NOVO: Função para desenhar o chão
 void drawGround() {
-    glColor3f(0.3f, 0.4f, 0.3f); 
+    glColor3f(1.0f, 1.0f, 0.4f); // cor semelhante à da areia 
 
     float ground_y = -12.0f;
     float size = 100.0f; // VALOR AUMENTADO para 100.0f para um chão maior
@@ -335,5 +401,290 @@ void drawSceneObjects() {
         glRotatef(90.0f, 1.0f, 0.0f, 0.0f); // Gira para ficar em pé
         // Usa a função auxiliar do seu robô
         drawCappedCylinderZ(1.5, 10.0, 16, 4); 
+    glPopMatrix();
+}
+
+// -------------------------------------------------------------
+// Elementos extras: algas, pedras, bolhas
+// -------------------------------------------------------------
+void drawSeaweed(float x, float z) {
+    glPushMatrix();
+    glTranslatef(x, -8.0f, z);
+    glColor3f(0.0f, 0.7f, 0.0f);
+    for (int i = 0; i < 8; i++) {              // mais segmentos
+        glPushMatrix();
+        glTranslatef(0, i * 0.4f, 0);         // mais espaçamento
+        glutSolidSphere(0.5, 10, 10);        // esferas maiores
+        glPopMatrix();
+    }
+    glPopMatrix();
+}
+
+void drawRock(float x, float z) {
+    glPushMatrix();
+    glTranslatef(x, -12.5f, z);    
+    glColor3f(0.3f, 0.3f, 0.3f);
+    glutSolidSphere(3.0, 20, 20);             // pedras bem maiores
+    glPopMatrix();
+}
+
+void drawBubble(float x, float y, float z) {
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glColor4f(0.8f, 0.9f, 1.0f, 0.4f);
+    glutSolidSphere(0.15, 12, 12);            // bolhas maiores
+    glPopMatrix();
+}
+
+void drawSceneElements() {
+    // Algas mais ao fundo
+    drawSeaweed(-20.0f, -10.0f); 
+    drawSeaweed(-22.5f, -12.5f);
+
+    // Pedras maiores, fundo
+    drawRock(20.0f, -35.0f);  
+    drawRock(5.5f, -20.5f);
+
+    // Bolhas mais ao fundo
+    for (int i = 0; i < 6; i++) {
+        drawBubble(-20.0f, -4.5f + i * 0.6f, -10.5f);
+    }
+}
+
+// -------------------------------------------------------------
+// Iluminação estilo fundo do mar
+// -------------------------------------------------------------
+void setupLighting() {
+    // Componente AMBIENTE 
+    // Luz ambiente é a "cor de base" da cena, espalhada igualmente
+    // Não depende da posição da fonte nem do ângulo do objeto
+    // Azul-esverdeado bem suave para dar clima subaquático
+    GLfloat lightAmbient[]  = { 0.0f, 0.2f, 0.4f, 1.0f };
+
+    // Componente DIFUSA
+    // Luz difusa depende do ângulo da superfície em relação à fonte de luz
+    // Dá a sensação de volume (um lado iluminado, outro sombreado)
+    // Azul claro para simular a luz do sol atravessando a água
+    GLfloat lightDiffuse[]  = { 0.2f, 0.6f, 0.8f, 1.0f };
+
+    // Componente ESPECULAR 
+    // Especular é o brilho concentrado/reflexo que aparece em superfícies brilhantes
+    // Depende da posição do observador + direção da luz
+    // Quase branco (0.9, 0.9, 0.9) para reflexos discretos
+    GLfloat lightSpecular[] = { 0.9f, 0.9f, 0.9f, 1.0f };
+
+    // Posição da luz
+    // Define de onde a luz vem
+    // Último valor (1.0) -> luz PONTUAL, como uma lâmpada localizada
+    // Se fosse 0.0 -> luz DIRECIONAL, como o sol vindo do infinito
+    // Mesma posição da iluminação sem ser no fundo do mar
+    GLfloat lightPosition[] = { 20.0, 30.0, 20.0, 1.0 };
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+}
+
+void applyLighting() {
+    if (currentIlumination) {
+        
+        GLfloat light0_ambient[] = { 0.2, 0.2, 0.2, 1.0 }; 
+        GLfloat light0_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+        GLfloat light0_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+        GLfloat light0_position[] = { 20.0, 30.0, 20.0, 1.0 }; 
+
+        glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_diffuse);
+        glLightfv(GL_LIGHT0, GL_SPECULAR, light0_specular);
+        glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
+
+        glEnable(GL_LIGHTING); 
+        glEnable(GL_LIGHT0);
+
+    } else {
+        // Iluminação fundo do mar
+        setupLighting();
+    }
+}
+
+void drawArmSegment(float length, float radius, float angle, float x, float y, float z) {
+    glPushMatrix();
+        // Translação para a posição inicial do segmento
+        glTranslatef(x, y, z);
+        // Rotação da articulação do segmento
+        glRotatef(angle, 0.0, 1.0, 1.0);
+
+        // Cada braço será composto por 3 cilindros menores
+        float partLength = length / 3.0f;
+
+        for (int i = 0; i < 3; i++) {
+            glPushMatrix();
+                // Desloca cada parte ao longo do X (já que o braço se estende nesse eixo)
+                glTranslatef(i * partLength, 0.0f, 0.0f);
+
+                // Orienta o cilindro no eixo X
+                glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+                // --- MESMA COR DO CORPO ---
+                glColor3f(0.75f, 0.75f, 0.75f); // preenchimento
+
+                // Desenha o cilindro curto
+                drawCappedCylinderZ(radius, partLength, 16, 4);
+            glPopMatrix();
+        }
+    glPopMatrix();
+}
+
+void drawHand(int side) { 
+    // Dimensões
+    const float WRIST_RADIUS = 0.15f;    
+    const float PALM_WIDTH = 0.5f;       
+    const float PALM_THICKNESS = 0.3f;   
+    const float PALM_LENGTH = 0.8f;      
+    const float FINGER_JOINT_SIZE = 0.2f; 
+    const float FINGER_WIDTH = 0.1f;    
+    const float FINGER_LENGTH = 0.6f;    
+    
+    // Cores em Tons de Azul
+    GLfloat dark_blue_metal[] = {0.1f, 0.2f, 0.4f, 1.0f}; 
+    GLfloat bright_blue_metal[] = {0.4f, 0.6f, 1.0f, 1.0f}; 
+
+    // --- 1. Pulso e Palma ---
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, bright_blue_metal);
+    glPushMatrix();
+        glutSolidSphere(WRIST_RADIUS, 16, 16); 
+    glPopMatrix();
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, dark_blue_metal);
+    glPushMatrix();
+        glTranslatef(WRIST_RADIUS + PALM_LENGTH / 2.0f, 0.0f, 0.0f);
+        glScalef(PALM_LENGTH, PALM_WIDTH, PALM_THICKNESS);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    // --- 2. Função Auxiliar para Desenhar um Dedo (Lambda) ---
+    // Nota: Mantenha esta lambda function ou a mova para fora se seu compilador não suportar.
+    auto drawFinger = [&](float x, float y, float z, float rot_y) {
+        
+        glPushMatrix();
+            glTranslatef(x, y, z);
+            glRotatef(rot_y, 0.0f, 1.0f, 0.0f); 
+
+            // Junta Esférica
+            glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, bright_blue_metal);
+            glutSolidSphere(FINGER_JOINT_SIZE / 2.0f, 8, 8); 
+
+            // Segmento 1
+            glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, dark_blue_metal);
+            glPushMatrix();
+                glTranslatef(FINGER_JOINT_SIZE / 2.0f, 0.0f, 0.0f);
+                glRotatef(90.0f, 0.0f, 1.0f, 0.0f); 
+                drawCappedCylinderZ(FINGER_WIDTH, FINGER_LENGTH / 2.0f, 8, 2);
+            glPopMatrix();
+
+            // Segmento 2 (Meio)
+            glPushMatrix();
+                glTranslatef(FINGER_JOINT_SIZE / 2.0f + FINGER_LENGTH / 2.0f, 0.0f, 0.0f);
+                glRotatef(90.0f, 0.0f, 1.0f, 0.0f); 
+                drawCappedCylinderZ(FINGER_WIDTH * 0.8f, FINGER_LENGTH / 2.0f, 8, 2); 
+            glPopMatrix();
+
+            // Ponta do Dedo
+            glPushMatrix();
+                glTranslatef(FINGER_JOINT_SIZE / 2.0f + FINGER_LENGTH, 0.0f, 0.0f);
+                glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, bright_blue_metal);
+                glutSolidSphere(FINGER_WIDTH * 0.8f, 8, 8);
+            glPopMatrix();
+
+        glPopMatrix();
+    };
+
+    // --- 3. Posições dos Dedos na Palma ---
+
+    float base_x = WRIST_RADIUS + PALM_LENGTH; 
+    
+    // Dedos (Indicador, Médio, Anelar, Mínimo)
+    drawFinger(base_x, PALM_WIDTH * 0.4f, 0.0f, 0.0f); 
+    drawFinger(base_x, PALM_WIDTH * 0.1f, 0.0f, 0.0f); 
+    drawFinger(base_x, -PALM_WIDTH * 0.2f, 0.0f, 0.0f); 
+    drawFinger(base_x * 0.95f, -PALM_WIDTH * 0.4f, 0.0f, 0.0f); 
+
+    // Polegar (CORRIGIDO PARA SIMETRIA)
+    glPushMatrix();
+        glTranslatef(WRIST_RADIUS * 1.5f, PALM_WIDTH / 2.0f, PALM_THICKNESS / 2.0f); 
+        
+        // *** CORREÇÃO DO POLEGAR ***
+        if (side == -1) {
+            // Se for o braço esquerdo, inverte o eixo Y do polegar para que ele 
+            // aponte para a frente/corpo, e não para as costas.
+            glScalef(1.0f, -1.0f, 1.0f); 
+        }
+        
+        glRotatef(90.0f, 0.0f, 0.0f, 1.0f); 
+        drawFinger(0.0f, 0.0f, 0.0f, 0.0f);
+    glPopMatrix();
+    
+    // Volta ao material padrão (IMPORTANTE)
+    GLfloat default_color[] = {1.0, 1.0, 1.0, 1.0};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, default_color);
+}
+
+void drawRobotArm(int side) { // side = 1 para direito, -1 para esquerdo
+    const float ARM_RADIUS = 0.3f;
+    const float UPPER_ARM_LENGTH = 2.5f;
+    const float FOREARM_LENGTH = 2.5f;
+
+    float shoulder_pivot_y = -2.5f; // altura do ombro abaixo da cabeça
+    // Posicionamento corrigido para encostar no corpo
+    float shoulder_pivot_x = (-0.3f + ARM_RADIUS) * side + 3.0f; 
+
+    glPushMatrix();
+        // 1. Translação para o ombro
+        glTranslatef(shoulder_pivot_x, shoulder_pivot_y, -1.5f);
+        
+        // --- Correção de Orientação e Simetria do Braço ---
+        if (side == 1) { // Braço Direito
+             // Rotação de 180 em Y para o braço desenhar para dentro (em direção ao corpo)
+             glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+        } else if (side == -1) { // Braço Esquerdo
+            // Espelhamento real (-1.0) e rotação de 180 em Y para a mão ficar orientada para frente.
+            glScalef(-1.0f, 1.0f, 1.0f); 
+            glRotatef(180.0f, 0.0f, 1.0f, 0.0f); 
+        }
+        // ----------------------------------------------------
+
+        // Ombro (Segmento Superior)
+        glPushMatrix();
+            // Controlado pelo teclado (Z/H)
+            glRotatef(arm_shoulder_z_angle, 0.0f, 0.0f, 1.0f); 
+            glRotatef(arm_shoulder_y_angle, 0.0f, 1.0f, 0.0f);
+            drawArmSegment(UPPER_ARM_LENGTH, ARM_RADIUS, 0, 0, 0, 0);
+
+            // Vai até o cotovelo
+            glTranslatef(UPPER_ARM_LENGTH, 0.0f, 0.0f);
+
+            // Cotovelo (Segmento Inferior)
+            glPushMatrix();
+                // Controlado pelo teclado (X/J)
+                glRotatef(arm_elbow_z_angle, 0.0f, 0.0f, 1.0f);
+                drawArmSegment(FOREARM_LENGTH, ARM_RADIUS, 0, 0, 0, 0);
+                
+                // Vai até o pulso (ponta do antebraço)
+                glTranslatef(FOREARM_LENGTH, 0.0f, 0.0f); 
+
+                // *** ROTAÇÃO DO PULSO PARA VIRAR A MÃO PARA DENTRO ***
+                // -90 * side -> Vira as palmas para o corpo em ambos os lados.
+                glRotatef(-90.0f * side, 1.0f, 0.0f, 0.0f); 
+                
+                // *** CHAMADA FINAL DA MÃO ***
+                drawHand(side); // <-- PASSA O 'side' PARA CORRIGIR O POLEGAR
+                
+            glPopMatrix(); 
+        glPopMatrix(); 
     glPopMatrix();
 }
