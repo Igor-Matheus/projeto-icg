@@ -102,7 +102,7 @@ g++ geometry.cpp robot.cpp -o robot -lopengl32 -lglu32 -lfreeglut
 ## 🚀 O que pode ser melhorado
 - Melhoria 1: Maneira como os braços foram implemnetados e a lógica de movimentação pelo cenário (questões físicas e referenciais) - [Jasom Rocha](https://github.com/JasomRocha)
 - Melhoria 2: Texturas mais realistas para serem colocadas no ambiente da cena, bem como acréscimo de mais elementos. - [Igor Matheus](https://github.com/Igor-Matheus)
-- Melhoria 3:
+- Melhoria 3: Adição de elementos mais complexos no cenário como extruturas que aparecem no desenho animado e etc. [Gustavo Gomes](https://github.com/IGustaMe)
 
 
 ## 👨‍💻 Autoria
@@ -121,6 +121,7 @@ Projeto desenvolvido por:
 ### evidênica 3 (29/09) - [Jasom Rocha](https://github.com/JasomRocha)
 
 <img width="524" height="577" alt="Captura de tela 2025-09-29 111455" src="https://github.com/user-attachments/assets/0a33b8a6-f6e1-40e1-a4ff-08cd5232538e" />
+
 
 
 
