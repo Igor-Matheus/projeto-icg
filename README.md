@@ -9,6 +9,7 @@ O robô possui movimentos corporais e consegue se deslocar utilizando rodas em s
 ## 📌 O que o código faz
 - Renderiza em 3D a personagem Karen como um robô humanoide.  
 - Permite movimentação dos braços.
+- Permite movimentação de câmera.
 - Permite troca de rostos para o robô.
 - Permite troca de iluminação.
 - Possui rodas para locomoção.  
@@ -26,7 +27,8 @@ O robô Karen e a cena podem ser controlados via teclado. Abaixo estão todas as
 
 ### 🔹 Câmera (Órbita ao redor da cena)  
 - **I / i** : Orbitar para a esquerda  
-- **O / o** : Orbitar para a direita  
+- **O / o** : Orbitar para a direita
+- **P / p** : Movimentação de câmera com curva de Bezier
 
 ### 🔹 Braços e Articulações  
 - **Z / z** : Abaixar o braço (ombro)  
@@ -126,6 +128,7 @@ Projeto desenvolvido por:
 ### ---> Evidênica 4 (01/10) - [Jasom Rocha](https://github.com/JasomRocha)
 
 <img width="754" height="781" alt="image" src="https://github.com/user-attachments/assets/c618e110-0937-43b3-ad2b-70b723fc7064" />
+
 
 
 
