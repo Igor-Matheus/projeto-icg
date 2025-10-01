@@ -38,6 +38,7 @@ void drawSeaweed(float x, float z);
 void drawRock(float x, float z);
 void drawBubble(float x, float y, float z);
 void drawSceneElements();
+void drawBezierPath();
 
 // Função para configurar iluminação estilo fundo do mar
 void setupLighting();

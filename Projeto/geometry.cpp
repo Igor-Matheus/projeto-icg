@@ -355,26 +355,45 @@ void drawCelestialBody() {
     glPopMatrix();
 }
 
-// NOVO: Função para desenhar o chão
+// NOVO: Função para desenhar o chão em formato quadriculado (Grid)
 void drawGround() {
-    glColor3f(1.0f, 1.0f, 0.4f); // cor semelhante à da areia 
-
+    
     float ground_y = -12.0f;
-    float size = 100.0f; // VALOR AUMENTADO para 100.0f para um chão maior
+    float size = 100.0f; // Tamanho total do chão
+    float square_size = 5.0f; // Tamanho de cada quadrado do grid (ajuste se quiser mais/menos quadrados)
 
     glPushMatrix();
         glTranslatef(0.0f, ground_y, 0.0f);
-        glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+        
+        // NOVO: Rotação de 90 graus em torno de X (plano XZ)
+        // O código original já tinha isso, mas é crucial para o chão estar horizontal.
+        glRotatef(90.0f, 1.0f, 0.0f, 0.0f); 
 
-        glBegin(GL_QUADS);
-            glNormal3f(0.0, 1.0, 0.0); 
-            
-            // O quadrado se estende de -size a +size
-            glVertex3f(-size, -size, 0.0f);
-            glVertex3f( size, -size, 0.0f);
-            glVertex3f( size,  size, 0.0f);
-            glVertex3f(-size,  size, 0.0f);
-        glEnd();
+        // Os loops percorrem o chão no plano XY (após a rotação, isso é X e Z)
+        for (float x = -size; x < size; x += square_size) {
+            for (float y = -size; y < size; y += square_size) {
+                
+                // NOVO: Lógica de Alternância de Cores (Padrão Xadrez)
+                // O padrão é baseado na soma dos índices do grid.
+                if (((int)(x / square_size) + (int)(y / square_size)) % 2 == 0) {
+                    // Cor 1: Cor da areia/base
+                    glColor3f(1.0f, 1.0f, 0.4f); 
+                } else {
+                    // Cor 2: Cor mais escura para o quadriculado
+                    glColor3f(0.8f, 0.8f, 0.3f); 
+                }
+
+                glBegin(GL_QUADS);
+                    glNormal3f(0.0, 1.0, 0.0); 
+                    
+                    // Desenha um quadrado de tamanho 'square_size'
+                    glVertex3f(x, y, 0.0f);
+                    glVertex3f(x + square_size, y, 0.0f);
+                    glVertex3f(x + square_size, y + square_size, 0.0f);
+                    glVertex3f(x, y + square_size, 0.0f);
+                glEnd();
+            }
+        }
     glPopMatrix();
 }
 
@@ -401,6 +420,16 @@ void drawSceneObjects() {
         glRotatef(90.0f, 1.0f, 0.0f, 0.0f); // Gira para ficar em pé
         // Usa a função auxiliar do seu robô
         drawCappedCylinderZ(1.5, 10.0, 16, 4); 
+    glPopMatrix();
+
+    
+    // NOVO: Desenha as curvas de Bézier em cima do robô
+    glPushMatrix();
+        glTranslatef(-10.0f, -9.5f, -10.0f);
+        glScalef(-5.0f, 5.0f, 5.0f);
+       // glRotatef(90.0f, 1.0f, 0.0f, 0.0f); 
+
+        drawBezierPath();
     glPopMatrix();
 }
 

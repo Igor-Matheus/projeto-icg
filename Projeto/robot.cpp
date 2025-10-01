@@ -51,6 +51,98 @@ bool currentIlumination = false;
 
 // --- FIM das Variáveis Globais ---
 
+// --- Variáveis de Animação de Câmera por Bézier ---
+
+// Estado da Animação
+bool isCameraSpinning = false;
+int spinFrame = 0;
+const int spinTotalFrames = 180; // Duração da animação (ex: 3 segundos a 60 FPS)
+
+// Pontos de controle para a curva Bézier (Ajuste esses valores para o seu gosto)
+// Esses pontos definem a *posição relativa* da câmera em relação ao robô.
+// Eixo X (Lateral): 
+// Vai de 0 para 30 (direita), depois para -30 (esquerda), e volta para 0.
+GLfloat ctrlpointsRelX[4] = { 0.0, 30.0, -30.0, 0.0 }; 
+
+// Eixo Y (Altura): 
+// Mantém uma altura de 15 acima da origem do mundo (aprox. 16.6 em relação ao chão).
+GLfloat ctrlpointsRelY[4] = { 15.0, 15.0, 15.0, 15.0 }; 
+
+// Eixo Z (Profundidade): 
+// Começa em 30 (Atrás), vai para -30 (Frente), e volta para 30 (Atrás).
+GLfloat ctrlpointsRelZ[4] = { 30.0, -30.0, -30.0, 30.0 };  
+// Posições iniciais/finais da câmera para garantir que ela volte ao normal
+float initialCamDistance, initialCamHeight, initialCamOrbitAngle;
+
+// Função para calcular valor de Bézier (copiada do seu outro arquivo)
+double bezier(double A, double B, double C, double D, double t) {
+    double s = 1.0 - t;
+    double AB = A*s + B*t;
+    double BC = B*s + C*t;
+    double CD = C*s + D*t;
+    double ABC = AB*s + BC*t;
+    double BCD = BC*s + CD*t;
+    return ABC*s + BCD*t;
+}
+// --- FIM das Variáveis de Animação de Câmera por Bézier ---
+
+void cameraSpinTimer(int value) {
+    if (isCameraSpinning) {
+        spinFrame++;
+
+        // Se a animação terminou
+        if (spinFrame >= spinTotalFrames) {
+            isCameraSpinning = false;
+            spinFrame = 0;
+
+            // Opcional: Reverter para a configuração de órbita padrão do usuário
+            camDistance = initialCamDistance;
+            camHeight = initialCamHeight;
+            camOrbitAngle = initialCamOrbitAngle;
+        }
+
+        glutPostRedisplay();
+    }
+
+    // Chama a si mesma novamente para continuar o loop de animação
+    glutTimerFunc(16, cameraSpinTimer, 0); // Aproximadamente 60 FPS
+}
+
+GLfloat pathCtrlpoints[12][3] = {
+   {-4.5, 0.0, 0.0}, {-2.41, 1, 0.0}, {-5.0, 1.74, 0.0}, {-3.5, 0.0, 0.0}, // 1ª curva
+   {-3.5, 0.0, 0.0}, {-1.23, 3.5, 0.0}, {-5.0, 3.5, 0.0}, {-2.5, 0.0, 0.0},// 2ª curva
+   {-2.5, 0.0, 0.0}, {-0.5, 1.0, 0.0}, {-3.0, 1.74, 0.0}, {-1.5, 0.0, 0.0} // 3ª curva
+};
+
+void drawBezierPath()
+{
+    // A curva será desenhada na origem do mundo (0, 0, 0), na altura Y=0.
+
+    // === 1ª curva (Base - Branca) ===
+    glColor3f(1, 1, 1);
+    glMap1f(GL_MAP1_VERTEX_3, 0, 1, 3, 4, &pathCtrlpoints[0][0]);
+    glBegin(GL_LINE_STRIP);
+        for (int i = 0; i <= 500; i++) 
+            glEvalCoord1f((GLfloat) i/500.0);
+    glEnd();
+
+    // ==== 2ª curva (Ciano) ====
+    glColor3f(0.0, 1.0, 1.0); // Ciano
+    glMap1f(GL_MAP1_VERTEX_3, 0, 1, 3, 4, &pathCtrlpoints[4][0]);
+    glBegin(GL_LINE_STRIP);
+        for (int i = 0; i <= 500; i++)
+            glEvalCoord1f((GLfloat) i/500.0);
+    glEnd();
+
+    // ==== 3ª curva (Magenta) ====
+    glColor3f(1.0, 0.0, 1.0); // Magenta
+    glMap1f(GL_MAP1_VERTEX_3, 0, 1, 3, 4, &pathCtrlpoints[8][0]);
+    glBegin(GL_LINE_STRIP);
+        for (int i = 0; i <= 500; i++)
+            glEvalCoord1f((GLfloat) i/500.0);
+    glEnd();
+}
+
 // Funções de desenho do arquivo geometry.c são declaradas via geometry.h
 
 
@@ -75,6 +167,8 @@ void init(void)
     glEnable(GL_LINE_SMOOTH); 
     
     // Configuração de Textura (Mantida)
+    glMap1f(GL_MAP1_VERTEX_3, 0, 1, 3, 4, &pathCtrlpoints[0][0]);
+    glEnable(GL_MAP1_VERTEX_3);
 }
 
 void display(void)
@@ -93,10 +187,32 @@ void display(void)
     float targetZ = robotZ;
     float targetY = robotY + 4.0f; // Foca na altura da cabeça do robô (Y=4.0 da cabeça)
 
-    // Calcula a posição da câmera em órbita
-    float camX = targetX + camDistance * sin(totalAngleRad);
-    float camY = robotY + camHeight; 
-    float camZ = targetZ + camDistance * cos(totalAngleRad);
+    float camX, camY, camZ;
+
+    if (isCameraSpinning) {
+        // --- CÁLCULO DA CÂMERA EM CURVA DE BÉZIER ---
+        double t = (double)spinFrame / spinTotalFrames;
+
+        // 1. Posição RELATIVA da câmera em relação ao robô, usando a curva Bézier
+        float relX = bezier(ctrlpointsRelX[0], ctrlpointsRelX[1], ctrlpointsRelX[2], ctrlpointsRelX[3], t);
+        float relY = bezier(ctrlpointsRelY[0], ctrlpointsRelY[1], ctrlpointsRelY[2], ctrlpointsRelY[3], t);
+        float relZ = bezier(ctrlpointsRelZ[0], ctrlpointsRelZ[1], ctrlpointsRelZ[2], ctrlpointsRelZ[3], t);
+
+        // 2. Transforma a posição RELATIVA em posição GLOBAL
+        // (A curva é definida no espaço do robô e transladada para a posição do robô)
+        camX = robotX + relX;
+        camY = robotY + relY;
+        camZ = robotZ + relZ;
+
+    } else {
+        // --- CÁLCULO DA CÂMERA DE ÓRBITA NORMAL (USUÁRIO) ---
+        float totalAngleRad = (robotAngleY + camOrbitAngle) * M_PI / 180.0;
+
+        // Calcula a posição da câmera em órbita
+        camX = targetX + camDistance * sin(totalAngleRad);
+        camY = robotY + camHeight; 
+        camZ = targetZ + camDistance * cos(totalAngleRad);
+    }
 
     gluLookAt(camX, camY, camZ,       // Eye position (Calculada para orbitar)
               targetX, targetY, targetZ,    // Center (Sempre olhando para o robô)
@@ -107,6 +223,7 @@ void display(void)
     drawGround();
     drawSceneObjects();
     drawSceneElements();
+
     // 2. TRANSFORMAÇÕES GLOBAIS DO ROBÔ (Movimento e Rotação)
      glPushMatrix();
         // Move o robô para sua posição global no mundo
@@ -264,6 +381,30 @@ void keyboard (unsigned char key, int x, int y)
         case 'Q':
             currentIlumination = !currentIlumination;
             break;
+
+        // --- NOVO: CONTROLE DE ANIMAÇÃO DE CÂMERA (P) ---
+        case 'p': // Ativar/Desativar a animação de spin
+        case 'P':
+            // Só inicia se a animação não estiver ativa
+            if (!isCameraSpinning) {
+                isCameraSpinning = true;
+                spinFrame = 0;
+
+                // Salva a configuração atual da órbita para restaurar depois
+                initialCamDistance = camDistance;
+                initialCamHeight = camHeight;
+                initialCamOrbitAngle = camOrbitAngle;
+            } else {
+                // Opcional: Parar a animação a qualquer momento
+                isCameraSpinning = false;
+                spinFrame = 0;
+
+                // Opcional: Restaura a posição anterior imediatamente
+                camDistance = initialCamDistance;
+                camHeight = initialCamHeight;
+                camOrbitAngle = initialCamOrbitAngle;
+            }
+            break;
             
         case 27: exit(0);
         default: break;
@@ -287,6 +428,8 @@ int main(int argc, char** argv)
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
+    glutTimerFunc(0, cameraSpinTimer, 0);
     glutMainLoop();
+
     return 0;
 }
