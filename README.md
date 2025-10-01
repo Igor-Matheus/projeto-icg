@@ -61,7 +61,7 @@ Um esquema em desenho das partes que compõem o robô:
 
 
 ## 🖼️ Imagens do programa
-Imagens e/ou GIF's do programa em execução:  
+Imagens do programa em execução:  
 
 ![Exemplo do robô Karen](./images/execution_01.PNG)
 
@@ -136,6 +136,7 @@ Projeto desenvolvido por:
 ### ---> Evidênica 4 (01/10) - [Jasom Rocha](https://github.com/JasomRocha)
 
 <img width="754" height="781" alt="image" src="https://github.com/user-attachments/assets/c618e110-0937-43b3-ad2b-70b723fc7064" />
+
 
 
 
