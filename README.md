@@ -30,7 +30,9 @@ O robô Karen e a cena podem ser controlados via teclado. Abaixo estão todas as
 
 ### 🔹 Braços e Articulações  
 - **Z / z** : Abaixar o braço (ombro)  
-- **H / h** : Levantar o braço (ombro)  
+- **H / h** : Levantar o braço (ombro)
+- **Y / y** : Trazer o braço pra frente
+- **N / n** : Levar o braço para trás
 - **X / x** : Dobrar o cotovelo  
 - **J / j** : Esticar o cotovelo  
 - **e** : Girar o robô no sentido anti-horário  
@@ -117,6 +119,7 @@ Projeto desenvolvido por:
 ### evidênica 3 (29/09) - [Jasom Rocha](https://github.com/JasomRocha)
 
 <img width="524" height="577" alt="Captura de tela 2025-09-29 111455" src="https://github.com/user-attachments/assets/0a33b8a6-f6e1-40e1-a4ff-08cd5232538e" />
+
 
 
 
